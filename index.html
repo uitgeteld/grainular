@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grainular</title>
+    <link rel="icon" type="image/png" href="images/grainular-logo.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header id="nav">
+        <a href="#nav"><img src="images/grainular-logo.png" alt="Grainular Logo"></a>
+        <a href="#upload-image">Get Started</a>
+        <a href="#contact">Contact</a>
+        <div class="theme-toggle">
+            <span class="theme-icon" id="themeIcon">☀️</span>
+            <div class="theme-switch" id="themeSwitch">
+                <div class="theme-switch-slider"></div>
+            </div>
+            <span class="theme-icon">🌙</span>
+        </div>
+    </header>
+
+    <main id="upload-image">
+        <h1>Grainular Image Editor</h1>
+        <p>Upload, edit, and download your images with no quality loss</p>
+
+        <div class="upload-area" id="uploadArea">
+            <input type="file" id="imageInput" accept="image/*" style="display:none;" />
+            <button class="upload-btn" id="uploadBtn">📁 Choose Image</button>
+            <p class="upload-hint">or drag & drop an image here</p>
+        </div>
+
+        <div class="editor-container" id="editorContainer" style="display:none;">
+            <canvas id="canvas"></canvas>
+            <div class="controls-sidebar">
+                <h3>Edit Your Image</h3>
+                <div class="control">
+                    <label>Black & White</label>
+                    <input type="checkbox" id="blackWhite" />
+                </div>
+                <div class="control">
+                    <label>Brightness <span id="brightnessValue">50</span></label>
+                    <input type="range" id="brightness" min="0" max="100" value="50" />
+                </div>
+                <div class="control">
+                    <label>Saturation <span id="saturationValue">50</span></label>
+                    <input type="range" id="saturation" min="0" max="100" value="50" />
+                </div>
+                <div class="control">
+                    <label>Colored Grain <span id="grainColorValue">0</span></label>
+                    <input type="range" id="grainColor" min="0" max="100" value="0" />
+                </div>
+                <div class="control">
+                    <label>B&W Grain <span id="grainMonoValue">0</span></label>
+                    <input type="range" id="grainMono" min="0" max="100" value="0" />
+                </div>
+                <button id="resetBtn" class="reset-btn">Reset All</button>
+            </div>
+        </div>
+        <button id="saveBtn" style="display:none;">💾 Download Image (PNG)</button>
+        <button id="newImageBtn" style="display:none;" class="secondary-btn">📁 Upload New Image</button>
+    </main>
+
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Grainular</h3>
+                <p>Professional image editing with film grain effects, right in your browser.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="#upload-image">Get Started</a>
+                <a href="https://github.com/uitgeteld/grainular" target="_blank">GitHub</a>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <a href="https://instagram.com/ovwastaken" target="_blank">Instagram</a>
+                <a href="https://discord.com/users/uitgeteld" target="_blank">Discord</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Grainular. All rights reserved. Built with ❤️ for photographers and creators.</p>
+        </div>
+
+        <script src="./javascript/grain.js"></script>
+        <script src="./javascript/saturate.js"></script>
+        <script src="./javascript/brightness.js"></script>
+        <script src="./javascript/blackwhite.js"></script>
+        <script>
+            const themeSwitch = document.getElementById('themeSwitch');
+            const themeIcon = document.getElementById('themeIcon');
+
+            function setTheme(dark) {
+                document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+                if (dark) {
+                    themeSwitch.classList.add('active');
+                } else {
+                    themeSwitch.classList.remove('active');
+                }
+            }
+
+            themeSwitch.addEventListener('click', () => {
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                setTheme(!isDark);
+                localStorage.setItem('grainular-theme', !isDark ? 'dark' : 'light');
+            });
+
+            // On load
+            const saved = localStorage.getItem('grainular-theme');
+            setTheme(saved === 'dark');
+        </script>
+        <script>
+            const imageInput = document.getElementById('imageInput');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const uploadArea = document.getElementById('uploadArea');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const editorContainer = document.getElementById('editorContainer');
+            const blackWhiteCheckbox = document.getElementById('blackWhite');
+            const brightnessSlider = document.getElementById('brightness');
+            const saturationSlider = document.getElementById('saturation');
+            const grainColorSlider = document.getElementById('grainColor');
+            const grainMonoSlider = document.getElementById('grainMono');
+            const saveBtn = document.getElementById('saveBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const newImageBtn = document.getElementById('newImageBtn');
+
+            const brightnessValue = document.getElementById('brightnessValue');
+            const saturationValue = document.getElementById('saturationValue');
+            const grainColorValue = document.getElementById('grainColorValue');
+            const grainMonoValue = document.getElementById('grainMonoValue');
+
+            uploadBtn.addEventListener('click', () => imageInput.click());
+            newImageBtn.addEventListener('click', () => imageInput.click());
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'var(--wheat-dark)';
+            });
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.borderColor = 'transparent';
+            });
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'transparent';
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    handleImageUpload(file);
+                }
+            });
+
+            let img = new Image();
+
+            function applyEffects() {
+                if (!img.src) return;
+
+                canvas.width = img.width;
+                canvas.height = img.height;
+
+                ctx.filter = 'none';
+                ctx.drawImage(img, 0, 0);
+
+                let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+                const isBlackWhite = blackWhiteCheckbox.checked;
+                if (isBlackWhite) {
+                    imageData = toBlackWhite(imageData);
+                }
+
+                const brightnessValue = brightnessSlider.value / 50;
+                imageData = adjustBrightness(imageData, brightnessValue);
+
+                if (!isBlackWhite) {
+                    const saturationValue = saturationSlider.value / 50;
+                    imageData = saturate(imageData, saturationValue);
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+
+                const coloredGrainAmount = parseInt(grainColorSlider.value);
+                const monoGrainAmount = parseInt(grainMonoSlider.value);
+
+                if (coloredGrainAmount > 0 || monoGrainAmount > 0) {
+                    let grainData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    if (coloredGrainAmount > 0) {
+                        grainData = addGrain(grainData, coloredGrainAmount, true);
+                    }
+                    if (monoGrainAmount > 0) {
+                        grainData = addGrain(grainData, monoGrainAmount, false);
+                    }
+                    ctx.putImageData(grainData, 0, 0);
+                }
+            }
+
+            function handleImageUpload(file) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    img = new Image();
+                    img.onload = () => {
+                        applyEffects();
+                        uploadArea.style.display = 'none';
+                        editorContainer.style.display = 'flex';
+                        saveBtn.style.display = 'inline-block';
+                        newImageBtn.style.display = 'inline-block';
+                    };
+                    img.src = reader.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            imageInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                handleImageUpload(file);
+            });
+
+            blackWhiteCheckbox.addEventListener('change', applyEffects);
+
+            brightnessSlider.addEventListener('input', () => {
+                brightnessValue.textContent = brightnessSlider.value;
+                applyEffects();
+            });
+            saturationSlider.addEventListener('input', () => {
+                saturationValue.textContent = saturationSlider.value;
+                applyEffects();
+            });
+            grainColorSlider.addEventListener('input', () => {
+                grainColorValue.textContent = grainColorSlider.value;
+                applyEffects();
+            });
+            grainMonoSlider.addEventListener('input', () => {
+                grainMonoValue.textContent = grainMonoSlider.value;
+                applyEffects();
+            });
+
+            resetBtn.addEventListener('click', () => {
+                blackWhiteCheckbox.checked = false;
+                brightnessSlider.value = 50;
+                saturationSlider.value = 50;
+                grainColorSlider.value = 0;
+                grainMonoSlider.value = 0;
+                brightnessValue.textContent = '50';
+                saturationValue.textContent = '50';
+                grainColorValue.textContent = '0';
+                grainMonoValue.textContent = '0';
+                applyEffects();
+            });
+
+            saveBtn.addEventListener('click', () => {
+                const link = document.createElement('a');
+                link.download = 'grainular-edited-image.png';
+                link.href = canvas.toDataURL('image/png', 1.0);
+                link.click();
+            });
+        </script>
+    </footer>
+</body>
+
+</html>
