@@ -76,10 +76,10 @@ Works in all modern browsers that support HTML5 Canvas:
 
 ## Contact
 
-- **Instagram**: [@ovwastaken](https://instagram.com/ovwastaken)
-- **Discord**: uitgeteld
 - **GitHub**: [uitgeteld](https://github.com/uitgeteld/)
 - **NPM**: [uitgeteld](https://www.npmjs.com/~uitgeteld) and [spacing_dev](https://www.npmjs.com/~spacing_dev)
+- **Discord**: uitgeteld
+- **Instagram**: [@ovwastaken](https://instagram.com/ovwastaken)
 
 ## License
 
