@@ -32,11 +32,11 @@ Professional image editing with film grain effects, right in your browser. No qu
 The JavaScript modules can be used in Node.js projects:
 
 ```bash
-npm install grainular
+npm install @uitgeteld/grainular
 ```
 
 ```javascript
-const { addGrain, saturate, adjustBrightness, toBlackWhite } = require('grainular');
+const { addGrain, saturate, adjustBrightness, toBlackWhite } = require('@uitgeteld/grainular');
 
 // Process image data
 imageData = addGrain(imageData, 20, true);      // colored grain
@@ -59,11 +59,11 @@ Open `index.html` in a browser to run the web application. No build process requ
 For Discord bot integration or Node.js usage, install via npm:
 
 ```bash
-npm install grainular
+npm install @uitgeteld/grainular
 ```
 
 ```javascript
-const grainular = require('grainular');
+const grainular = require('@uitgeteld/grainular');
 // Use grainular.addGrain, grainular.saturate, etc.
 ```
 
