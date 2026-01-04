@@ -45,22 +45,6 @@ imageData = adjustBrightness(imageData, 1.2);   // increase brightness
 imageData = toBlackWhite(imageData);            // convert to B&W
 ```
 
-## Project Structure
-
-```
-grainular/
-├── index.html          # Main web application
-├── test.html           # Advanced editor
-├── style.css           # Styling with wheat grain theme
-├── javascript/         # Modular image processing functions
-│   ├── grain.js        # Grain effect (colored/mono)
-│   ├── saturate.js     # Saturation adjustment
-│   ├── brightness.js   # Brightness adjustment
-│   ├── blackwhite.js   # B&W conversion
-│   └── index.js        # NPM package entry point
-└── logo.png           # Brand logo
-```
-
 ## Technology Stack
 
 - **Pure JavaScript** - No frameworks, just vanilla JS
@@ -94,7 +78,8 @@ Works in all modern browsers that support HTML5 Canvas:
 
 - **Instagram**: [@ovwastaken](https://instagram.com/ovwastaken)
 - **Discord**: uitgeteld
-- **GitHub**: [uitgeteld/grainular](https://github.com/uitgeteld/grainular)
+- **GitHub**: [uitgeteld](https://github.com/uitgeteld/)
+- **NPM**: [uitgeteld](https://www.npmjs.com/~uitgeteld) and [spacing_dev](https://www.npmjs.com/~spacing_dev)
 
 ## License
 
